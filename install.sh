@@ -1,43 +1,71 @@
 #!/bin/bash
 
-echo "========================================="
-echo "  rec0nes4y — Installation Started"
-echo "========================================="
+echo "====================================================="
+echo "   Installing Dependencies for rec0nes4y"
+echo "====================================================="
 
-# Check if Go is installed
+# ---------- Update System ----------
+echo "[+] Updating package list..."
+sudo apt update -y
+
+# ---------- Install Base Packages ----------
+echo "[+] Installing required system tools..."
+sudo apt install -y \
+    curl wget git python3 python3-pip build-essential \
+    nmap whatweb gobuster dirsearch whois unzip jq
+
+# ---------- Check / Install Golang ----------
 if ! command -v go &> /dev/null; then
-    echo "[!] Go is not installed. Installing Golang..."
-    sudo apt update
-    sudo apt install -y golang-go
+    echo "[!] Golang not found — installing Go"
+    sudo apt install golang -y
+else
+    echo "[+] Golang is already installed"
 fi
 
-echo "[+] Updating packages..."
-sudo apt update
+export PATH=$PATH:$HOME/go/bin
 
-echo "[+] Installing APT dependencies..."
-sudo apt install -y nmap whatweb gobuster dirsearch whois build-essential git
+# ---------- Install Go-based Tools ----------
+echo "[+] Installing Go security tools..."
 
-echo "[+] Installing Go-based tools..."
-go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
-go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
-go install -v github.com/OWASP/Amass/v3/...@latest
-go install -v github.com/tomnomnom/assetfinder@latest
+go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+go install github.com/projectdiscovery/httpx/cmd/httpx@latest
+go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+go install github.com/OWASP/Amass/v3/...@latest
+go install github.com/tomnomnom/assetfinder@latest
+go install github.com/tomnomnom/waybackurls@latest
+go install github.com/lc/gau@latest
+go install github.com/projectdiscovery/katana/cmd/katana@latest
 go install github.com/guelfoweb/hele@latest
 
-echo "[+] Updating $PATH if needed..."
-if [[ ":$PATH:" != *":$HOME/go/bin:"* ]]; then
-    echo "export PATH=$PATH:$HOME/go/bin" >> ~/.bashrc
-    export PATH=$PATH:$HOME/go/bin
-fi
+# ---------- Move Go binaries to path ----------
+echo "[+] Exporting Go binaries to PATH"
+echo 'export PATH=$PATH:$HOME/go/bin' >> ~/.bashrc
+source ~/.bashrc
 
-echo "[+] Making rec0nes4y.sh executable (if exists)..."
-chmod +x rec0nes4y.sh 2>/dev/null
-
-echo "========================================="
-echo "   rec0nes4y Installation Completed"
-echo "========================================="
+# ---------- Check installations ----------
 echo
-echo "[✓] Run the tool using:"
+echo "====================================================="
+echo "   Checking installed tools"
+echo "====================================================="
+
+TOOLS=("subfinder" "assetfinder" "amass" "dnsx" "httpx" "naabu" "nuclei" "katana" "waybackurls" "gau" "gobuster" "whatweb" "hele" "nmap" "whois")
+for t in "${TOOLS[@]}"; do
+    if command -v $t &>/dev/null; then
+        echo "[✓] $t installed"
+    else
+        echo "[✗] $t NOT installed"
+    fi
+done
+
+# ---------- Final message ----------
+echo
+echo "====================================================="
+echo "  rec0nes4y installation complete!"
+echo "====================================================="
+echo
+echo "[+] Run the tool using:"
 echo "    ./rec0nes4y.sh <domain>"
 echo
+exit 0

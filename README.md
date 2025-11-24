@@ -1,10 +1,3 @@
-<div align="center">
-   <a href="https://github.com/yourusername/rec0nes4y">
-      <img src="YOUR-BANNER-IMAGE-LINK-HERE" height="250" width="600" />
-   </a>
-</div>
-
-<br><br><br>
 
 <div align="center">
 

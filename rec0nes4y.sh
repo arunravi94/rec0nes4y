@@ -60,7 +60,7 @@ fi
 
 
 # ---------- CONFIG FILE ----------
-CONFIG_FILE="../config.ini"
+CONFIG_FILE="config.ini"
 
 # defaults if config missing
 MODE="lite"
